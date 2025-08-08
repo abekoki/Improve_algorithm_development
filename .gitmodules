@@ -1,0 +1,9 @@
+[submodule "core_lib"]
+	path = core_lib
+	url = https://github.com/abekoki/core_lib.git
+[submodule "drowsy_detection"]
+	path = drowsy_detection
+	url = https://github.com/abekoki/drowsy_detection.git
+[submodule "ai_analysis_engine"]
+	path = ai_analysis_engine
+	url = https://github.com/abekoki/ai_analysis_engine.git
