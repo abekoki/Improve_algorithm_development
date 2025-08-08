@@ -3,5 +3,8 @@
 memo.md
 log.md
 
+# Python 仮想環境（uv想定）
+.venv/
+
 
 
