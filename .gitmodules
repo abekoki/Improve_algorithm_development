@@ -7,3 +7,6 @@
 [submodule "ai_analysis_engine"]
 	path = ai_analysis_engine
 	url = https://github.com/abekoki/ai_analysis_engine.git
+[submodule "DataWareHouse"]
+	path = DataWareHouse
+	url = https://github.com/abekoki/DataWareHouse.git
