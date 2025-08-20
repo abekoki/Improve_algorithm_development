@@ -1,10 +1,12 @@
 # アルゴリズム開発効率化プロジェクト - 実施者向けTODO
 
-> 現状注記（2025-08-08）
+> 現状注記（2025-08-20）
 >
 > - 計画上のディレクトリ例示（`projects/01_〜05_` 等）と実体に差分があります。現状の進捗は`projects/進捗管理シート.md`を参照してください。
 > - CI/CDや評価ツールは設計書はあるものの、実装は未着手です。短期は`drowsy_detection`に最小CI（テスト実行）を導入します。
 > - 依存・環境はuv管理を前提に整備予定です（ルートREADMEは今後更新）。
+> - ルートREADMEのセットアップ手順はuv前提に未整合。uvベース（`.venv`固定）へ更新予定。
+> - `drowsy_detection` のインポート命名に不整合（`03_source` パッケージ vs `from source...`）。仕様上は `source` に統一予定（実装は後追い）。
 
 ## 📋 プロジェクト概要
 - **期間**: 6週間（Phase 1-4）
@@ -27,7 +29,7 @@
 - **自動化ワークフロー設定** (`config/automation_config.json`)
 - **詳細設計資料** (`projects/詳細設計資料/`)
 
-【現状】`.github/workflows/` は未作成。`analysis/CI` は設計書のみ。
+【現状】`.github/workflows/` は未作成。`analysis/CI` は設計書のみ。AI分析エンジンは仕様のみで未実装。
 
 ### Phase 3: 検証実験（Week 5）
 - **検証実験レポート** (`docs/verification_report.md`)
@@ -196,6 +198,13 @@ Improve_algorithm_development/
   - 依存: 評価指標定義
   - **成果物**: 評価ツール基本構造（`projects/04_評価ツール/evaluation_framework/`）
 
+- [ ] 【整合】`drowsy_detection` のインポート統一
+  - 担当: 開発者A
+  - 期限: Week 3 内
+  - 詳細: パッケージ名を `03_source` → `source` に統一（ディレクトリ改名、`pyproject.toml` の `packages` 更新、相対インポートへ修正）
+  - 依存: なし
+  - **成果物**: `drowsy_detection` の安定した import 体系
+
 #### Day 3-5: 評価ロジック実装
 - [ ] **正解率計算機能**
   - 担当: 開発者A
@@ -254,9 +263,16 @@ Improve_algorithm_development/
 - [ ] **CI/CD設定**
   - 担当: プロジェクトリーダー
   - 期限: Day 5
-  - 詳細: GitHub Actions / GitLab CIの設定
+  - 詳細: GitHub Actions / GitLab CIの設定（まずは `drowsy_detection` のテスト実行のみ、uv使用）
   - 依存: 全システム完成
   - **成果物**: CI/CD設定ファイル（`.github/workflows/`, `.gitlab-ci.yml`）
+
+- [ ] 【整合】ルート `README.md` を uv 手順へ更新
+  - 担当: ドキュメント担当
+  - 期限: Week 3 内
+  - 詳細: `pip install -r requirements.txt` → `uv sync`、`.venv` 固定の手順へ統一
+  - 依存: なし
+  - **成果物**: 更新済みの `README.md`
 
 ## 📅 Phase 3: 検証実験（Week 5）
 

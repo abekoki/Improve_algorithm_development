@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+# プロジェクト概要と編集ガイド
+
+本リポジトリは以下のサブプロジェクトで構成されます（実装の実体に基づく要約）。
+
+- `core_lib`: OpenCV / MediaPipe による動画解析・CSV出力。設定/説明は[core_lib/pyproject.toml](mdc:core_lib/pyproject.toml)、[core_lib/README.md](mdc:core_lib/README.md) を参照。
+- `DataWareHouse`: データベース（SQLite）設計・API・ユーティリティ。詳細は[DataWareHouse/README.md](mdc:DataWareHouse/README.md)、API例は[DataWareHouse/datawarehouse/core_lib_api.py](mdc:DataWareHouse/datawarehouse/core_lib_api.py)。
+- `drowsy_detection`: 連続閉眼検知アルゴリズム（実装/テスト完備）。設定は[drowsy_detection/pyproject.toml](mdc:drowsy_detection/pyproject.toml)、CLIは[drowsy_detection/03_source/cli/main.py](mdc:drowsy_detection/03_source/cli/main.py)。
+- `ai_analysis_engine`: 仕様・設計中心（コードは未整備）。
+
+主要エントリポイント（実装ベース）
+- `core_lib/main.py`（暫定）
+- `drowsy_detection` のCLIエントリ `drowsy-detect`（[drowsy_detection/03_source/cli/main.py](mdc:drowsy_detection/03_source/cli/main.py)）
+- `DataWareHouse/scripts/` のユーティリティ（DB初期化/構造確認）
+
+環境・運用の原則
+- パッケージ/環境は「uv」管理、仮想環境名は `.venv` 固定。リポジトリルートの[README.md](mdc:README.md)は今後uv手順へ統一予定。
+- 作業記録は必ず日付付きで[log.md](mdc:log.md)に追記（YYYY-MM-DD）。
+- Windows前提（PowerShell）。パス操作は `pathlib` を推奨。
+
+重要: サブモジュール（配下）は書き込み禁止
+- `ai_analysis_engine/`, `core_lib/`, `DataWareHouse/`, `drowsy_detection/` は独立Git管理のため、直下の履歴・構成を壊す変更は避けること（仕様編集や上位ドキュメント整備は可）。
+
+仕様と実装の整合
+- 差異がある場合は「実装を正」とし、`projects/` 配下の仕様/設計ドキュメントを更新する。
+- 未実装箇所はドキュメントに「現状（YYYY-MM-DD）: 未実装」を明記。
+

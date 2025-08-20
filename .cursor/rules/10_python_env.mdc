@@ -1,0 +1,23 @@
+---
+globs: *.py,*.toml
+description: Python/設定ファイル編集時の統一ルール（uv/型/エラーハンドリング等）
+---
+# Python/設定 編集ルール
+
+- Pythonバージョンは 3.10+ を前提。`pyproject.toml` の `requires-python` を尊重。
+- 依存導入は `uv` を使用（`uv venv .venv` → `uv sync`）。`pip install` 手順は追加しない。
+- 型安全・明示性重視：公開APIは型注釈を付与し、`any` や不必要なキャストは避ける。
+- 例外処理は握りつぶさない。意味のあるメッセージと文脈を付与して再送出。
+- 既存のインデント/フォーマットに従う。不要な全体リフォーマットは禁止。
+- Windows前提のためパスは `pathlib.Path` を推奨（手書きの区切り文字を避ける）。
+
+プロジェクト固有の注意点
+- `drowsy_detection` は現在 `03_source` ディレクトリ配下に実装があり、コードでは `from source...` のインポートを用いている。
+  - 既存コードの動作を壊す変更（即時のパッケージ名改変等）は避ける。大規模変更は専用タスクで。
+  - CLIは `drowsy-detect`（[drowsy_detection/pyproject.toml](mdc:drowsy_detection/pyproject.toml)）から起動。
+- `DataWareHouse` のコミットハッシュは40桁の16進固定。検証は[core_lib_api.py](mdc:DataWareHouse/datawarehouse/core_lib_api.py)の正規表現に準拠。
+
+テスト/品質
+- `drowsy_detection/tests` で `pytest` が整備済み。該当領域を編集した場合はテストを追加/更新し、必ず実行する。
+- Lint/フォーマッタ設定（black/isort/mypy）は[drowsy_detection/pyproject.toml](mdc:drowsy_detection/pyproject.toml)に準拠。
+

@@ -1,0 +1,17 @@
+---
+description: CI/CD ルール（段階導入、uv前提、Windows互換）
+---
+# CI/CD ルール
+
+現状（2025-08-20）
+- `.github/workflows/` は未導入。まずは `drowsy_detection` のテスト実行のみを導入対象とする。
+
+原則
+- 依存インストールは `uv` を使用（`uv venv .venv` → `uv sync`）。
+- Pythonは 3.10+ を使用。
+- アーティファクト/結果は専用ディレクトリへ保存し、パスは相対指定。
+- セルフホスト実行を見据え、Windows互換のコマンドに注意（bash専用表現の乱用を避ける）。
+
+最低限のワークフロー例（骨子）
+1) checkout → 2) setup-python → 3) install uv → 4) uv sync → 5) pytest（`drowsy_detection`）
+

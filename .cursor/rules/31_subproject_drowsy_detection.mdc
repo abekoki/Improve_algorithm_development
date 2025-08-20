@@ -1,0 +1,19 @@
+---
+description: drowsy_detection 編集方針（インポート整合/テスト/CLI）
+---
+# drowsy_detection 編集方針
+
+構成/特徴
+- 実装は `drowsy_detection/03_source/` 配下。インポートは `from source...` パスを使用。
+- CLIエントリは `drowsy-detect`（[pyproject.toml](mdc:drowsy_detection/pyproject.toml) `project.scripts`）。
+- テストは `drowsy_detection/tests/` に整備。`pytest` 設定は `pyproject.toml` に記載。
+
+編集ルール
+- インポート体系の変更（`03_source` → `source` へ改名等）は大規模であるため、専用タスクで実施。既存コードは壊さない。
+- 公開APIとデータモデル（`Config`, `InputData`, `OutputData`）は型注釈必須。互換性を保つ。
+- 変更時は該当テストを更新/追加し、`pytest` を通す。
+
+CLI/サンプル
+- CLIはJSON入出力。サンプル生成オプション（`--create-sample-*`）は動作を維持。
+- 参考: [drowsy_detection/examples](mdc:drowsy_detection/examples/README.md)
+

@@ -1,0 +1,15 @@
+---
+globs: *.md
+description: ドキュメント/ログ運用ルール（実装優先・日付記録・日本語）
+---
+# ドキュメント/ログ ルール
+
+- 仕様と実装に差異がある場合は「実装を正」としてドキュメントを更新。
+- 未実装/計画中の機能は、見出し直下に「現状（YYYY-MM-DD）: 未実装」を明記。
+- 作業や意思決定はリポジトリ直下の[log.md](mdc:log.md)に日付付きで追記（YYYY-MM-DD）。
+- 手順はWindows + `uv` 前提に統一。旧 `pip install -r requirements.txt` 記述は `uv sync` に置換（計画中の場合は注記）。
+- 機密や個人情報は記載しない。必要時はマスクし、パスは相対で示す。
+- 可視化/フローはMermaidを使用（Markdown準拠）。
+
+参考: ルートREADMEは順次 `uv` 手順へ更新予定 → [README.md](mdc:README.md)
+

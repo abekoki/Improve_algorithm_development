@@ -1,0 +1,19 @@
+---
+description: core_lib と DataWareHouse 編集方針
+---
+# core_lib / DataWareHouse の編集方針
+
+core_lib
+- OpenCV/MediaPipe/NumPy/Scipy に依存（[core_lib/pyproject.toml](mdc:core_lib/pyproject.toml)）。
+- 映像→CSVの項目仕様は既存実装に合わせる。新項目追加時は`02_core_lib_output`の構造と整合を確保。
+- 実装の主要スクリプト: `video_analysis.py`, `eye_detection.py`（長大ファイル。局所変更を徹底）。
+
+DataWareHouse
+- DBはSQLite。外部キーは接続ごとに `PRAGMA foreign_keys = ON` が必要。
+- コミットハッシュは40桁16進（[core_lib_api.py](mdc:DataWareHouse/datawarehouse/core_lib_api.py)のバリデーションに準拠）。
+- 出力管理は `02_core_lib_output/v{semver}/{video_ID}/` のディレクトリ規約を遵守。
+
+共通ルール
+- 仕様差異が出た場合は `projects/` 配下の設計文書を更新し、実装を正とする注記を追加。
+- DBスキーマの変更は `00_design/schema.sql` と脚注ドキュメントに反映。
+

@@ -1,5 +1,7 @@
 # CI/CDパイプライン設計書
 
+> 現状（2025-08-20）: 本設計に対応するCI/CD実装（`.github/workflows/`）は未作成です。ローカル実行はWindows + uv（`.venv`固定）を前提に整備中で、CIは`drowsy_detection`のテスト実行から段階導入します。
+
 ## 📋 概要
 
 CI/CDパイプラインは、コードの変更を自動的に検知し、評価・分析・改善提案を自動実行するシステムです。
@@ -21,11 +23,12 @@ Git Push → 自動評価実行 → AI分析 → 改善提案生成 → 結果�
 ## 🏗️ システム構成
 
 ### 使用技術
-- **CI/CD**: GitHub Actions / GitLab CI
-- **コンテナ**: Docker
-- **実行環境**: Python 3.9+
-- **通知**: Slack / Email / Webhook
-- **セルフホストランナー**: ローカル環境での評価実行
+- **CI/CD**: GitHub Actions / GitLab CI（現状は未実装）
+- **パッケージ管理**: uv（ローカルは`.venv`固定）
+- **コンテナ**: Docker（将来導入）
+- **実行環境**: Python 3.10+
+- **通知**: Slack / Email / Webhook（将来導入）
+- **セルフホストランナー**: ローカル環境での評価実行（将来導入）
 
 ### パイプライン構成
 ```
@@ -65,9 +68,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install dependencies
+      - name: Install uv
         run: |
-          pip install -r requirements.txt
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Sync dependencies (uv)
+        run: |
+          uv venv .venv
+          uv sync
       - name: Run evaluation
         run: |
           python evaluation_engine.py
@@ -95,9 +102,9 @@ steps:
     uses: actions/download-artifact@v3
     with:
       name: evaluation-results
-  - name: Run AI analysis
+  - name: Run AI analysis (placeholder)
     run: |
-      python ai_analysis_engine.py
+      echo "AI analysis engine is not yet implemented."
   - name: Generate report
     run: |
       python report_generator.py
