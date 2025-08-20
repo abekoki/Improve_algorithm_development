@@ -19,6 +19,7 @@ alwaysApply: true
 - パッケージ/環境は「uv」管理、仮想環境名は `.venv` 固定。リポジトリルートの[README.md](mdc:README.md)は今後uv手順へ統一予定。
 - 作業記録は必ず日付付きで[log.md](mdc:log.md)に追記（YYYY-MM-DD）。
 - Windows前提（PowerShell）。パス操作は `pathlib` を推奨。
+- データ保管: データセットおよび各エンジンの出力は `DataWareHouse/` 配下で一元管理（レポート/CSV/JSON/Notebook/HTML 等）。
 
 重要: サブモジュール（配下）は書き込み禁止
 - `ai_analysis_engine/`, `core_lib/`, `DataWareHouse/`, `drowsy_detection/` は独立Git管理のため、直下の履歴・構成を壊す変更は避けること（仕様編集や上位ドキュメント整備は可）。

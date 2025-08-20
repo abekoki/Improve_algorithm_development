@@ -105,6 +105,15 @@ AI分析エンジン/
     └── plot_styles.py                   # 可視化スタイル
 ```
 
+### データセット・出力の保管ポリシー
+- 本プロジェクトで扱うデータセットおよび各エンジンの出力は、`DataWareHouse/` 配下で一元管理します。
+- 想定ディレクトリ（例）:
+  - `DataWareHouse/01_mov_data/`（動画などの元データ。Git管理外/サンプルのみ）
+  - `DataWareHouse/02_core_lib_output/v{core_semver}/{video_ID}/`（コアライブラリの出力）
+  - `DataWareHouse/03_algorithm_output/v{algo_semver}/{core_lib_output_ID}/`（アルゴリズムの出力）
+- 評価・分析・可視化で生成される成果物（CSV/JSON/Notebook/HTML 等）も、原則 `DataWareHouse/` 配下に相対パスで保存します。
+- 保存先のベースパスは設定により切替可能としつつ、仕様上は `DataWareHouse/` を既定値とします。
+
 ## 📊 分析項目詳細
 
 ### 時系列分析

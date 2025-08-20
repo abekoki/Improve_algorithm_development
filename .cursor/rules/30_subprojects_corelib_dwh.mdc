@@ -16,4 +16,5 @@ DataWareHouse
 共通ルール
 - 仕様差異が出た場合は `projects/` 配下の設計文書を更新し、実装を正とする注記を追加。
 - DBスキーマの変更は `00_design/schema.sql` と脚注ドキュメントに反映。
+- データ保管ポリシー: データセット/出力/レポートは `DataWareHouse/` 配下に保存。コア出力 `02_core_lib_output/`、アルゴ出力 `03_algorithm_output/` を規約化。
 

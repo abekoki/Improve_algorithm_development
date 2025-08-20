@@ -24,6 +24,10 @@
 - `.cursor/rules/31_subproject_drowsy_detection.mdc`: `drowsy_detection` の編集方針（インポート整合、テスト、CLI）を定義。
 - `.cursor/rules/40_ci_cd.mdc`: CI/CD段階導入の骨子とuv前提ルールを定義。
 
+### ポリシー追記（2025-08-20）
+- データセットおよび各エンジン出力は `DataWareHouse/` 配下で一元管理する旨を仕様・設計・ルールへ明記。
+- 反映先: `projects/詳細設計資料/AI分析エンジン設計書.md`, `projects/詳細設計資料/CI_CDパイプライン設計書.md`, `projects/詳細設計資料/システムシーケンス図.md`, `projects/プロジェクト提案資料.md`, `.cursor/rules/00_overview.mdc`, `.cursor/rules/30_subprojects_corelib_dwh.mdc`。
+
 ### 所見
 - `drowsy_detection` は `03_source` をパッケージ公開しているが、コード側は `from source...` を使用。CLIでは `sys.path` へルート追加で整合を図っているが、パッケージ名の一貫性に課題（`03_source` はPythonパッケージ名として不適切）。
 - `core_lib` は OpenCV/MediaPipe に依存し、`DataWareHouse` と統合する想定。出力は `02_core_lib_output/v1.0.0/{video_ID}/` に格納される設計。
