@@ -10,3 +10,6 @@
 [submodule "DataWareHouse"]
 	path = DataWareHouse
 	url = https://github.com/abekoki/DataWareHouse.git
+[submodule "evaluation_engine"]
+	path = evaluation_engine
+	url = https://github.com/abekoki/evaluation_engine.git
