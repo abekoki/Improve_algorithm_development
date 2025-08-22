@@ -1,0 +1,1 @@
+This directory is used by Serena MCP to store session and planning artifacts for the Improve_algorithm_development workspace.
