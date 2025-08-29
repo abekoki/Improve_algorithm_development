@@ -4,7 +4,7 @@
 
 ## 📋 概要
 
-AI分析エンジンは、アルゴリズム評価結果を自動分析し、Jupyter Notebook形式で分析レポートを生成するシステムです。
+AI分析エンジンは、アルゴリズム評価結果を自動分析し分析レポートを生成するシステムです。
 
 本エンジンは次の3つのエージェントの組み合わせで構成されます。
 
@@ -24,206 +24,280 @@ AI分析エンジンは、アルゴリズム評価結果を自動分析し、Jup
 
 ### 主要機能
 1. **自動評価結果分析**
-2. **Jupyter Notebook形式でのレポート生成**
-3. **改善提案の自動生成**
-4. **課題の優先度付け**
-5. **全体性能差分レポート**（エージェント2）
-6. **個別データ詳細レポート**（エージェント3）
+2. **レポート**
+3. **課題の優先度付け**
+4. **全体性能差分レポート**（エージェント2）
+5. **個別データ詳細レポート**（エージェント3）
 
 ### レポート構成
 1. **サマリセクション**
-   - 全体評価スコア（Precision, Recall, F1-score）
-   - 主要課題の要約（上位3-5件）
+   - 全体評価スコア（データセット全体の正解率、過検知数(未実装)）
+   - 主要課題の要約
    - 改善優先度ランキング
    - 推奨アクション
 
 2. **個別分析結果**
-   - 時系列分析
-   - エラー分析
-   - パフォーマンス分析
-   - ロバスト性分析
+   - 時系列分析結果（対象データの時系列グラフ（閾値や、検知フレームにマークを追加するなどわかりやすい図を生成））
+   - エラー分析結果（誤検知・未検知の原因を特定）
 
-3. **詳細分析**
-   - データ品質分析
-   - アルゴリズム特性分析
-   - エッジケース分析
-   - 比較分析
-
-4. **可視化セクション**
-   - 時系列グラフ
-   - 混同行列
-   - ROC曲線・PR曲線
-   - エラー分布ヒートマップ
-   - パフォーマンス散布図
-
-5. **改善提案セクション**
-   - 即座に実施可能
-   - 短期改善
-   - 中期改善
-   - 長期改善
 
 ## 🏗️ 技術仕様
 
 ### 使用技術
-- **AI API**: OpenAI GPT / Claude
+- **AI API**: OpenAI GPT
 - **データ処理**: Python + pandas + numpy
 - **可視化**: matplotlib + seaborn + plotly
-- **レポート形式**: Jupyter Notebook (.ipynb)
-- **コンテナ化**: Docker
+- **データ管理**: データセットはDataWareHouseで管理
+- **データ分析**: データ分析はlangchainを使用。必要なツール類は詳細仕様で定義。
+- **レポート形式**: マークダウン+jpgによる図
 
-（拡張: 個別分析で使用）
-- **エージェント実装**: LangChain など
-- **RAG**: FAISS ベクトルストア等
-- **コード解析**: AST解析
-- **動的解析**: Pandas AI
-- **HTMLレポート**: Jinja2 + Plotly（Notebookと併用可）
 
 ### システム構成
-```
-AI分析エンジン/
-├── controller/                          # 1. 制御・最終レポートエージェント
-│   ├── orchestrator.py                  # 実行順序・入出力連携・失敗時リトライ
-│   ├── final_report.py                  # 最終Notebook/HTML生成
-│   └── templates/
-│       ├── notebook_template.ipynb
-│       └── html_template.html
-├── performance_analyzer/                # 2. 全体性能の確認・差分分析
-│   ├── summary_metrics.py               # Precision/Recall/F1/過検知/未検知/速度
-│   ├── diff_analyzer.py                 # 前回/ベースライン比較
-│   ├── visualizations.py                # 混同行列・PR/ROC・トレンド
-│   └── exporter.py                      # JSON/PNG/HTML などの成果物出力
-├── instance_analyzer/                   # 3. 個別データの分析
-│   ├── expectation_parser.py            # 期待値の構造化（テンプレ＋LLM）
-│   ├── rag_helper.py                    # 仕様書/コード参照（FAISS）
-│   ├── dynamic_analysis.py              # Pandas AI による動的解析
-│   ├── hypothesis_loop.py               # 仮説→検証→ループバック
-│   ├── code_inspector.py                # ASTベースのコード確認
-│   └── instance_report.py               # 個別レポート生成（HTML/Notebookセクション）
-└── shared/
-    ├── io_schemas.py                    # 入出力スキーマ（pydantic）
-    ├── utils.py                         # 共通ユーティリティ
-    └── plot_styles.py                   # 可視化スタイル
+```mermaid
+graph TB
+    subgraph "AI分析エンジン アーキテクチャ"
+        subgraph "入力層"
+            I1[評価結果データ<br/>CSV/JSON]
+            I2[仕様書<br/>Markdown]
+            I3[ソースコード<br/>Python]
+            I4[期待値<br/>自然言語]
+        end
+        
+        subgraph "制御・最終レポートエージェント（オーケストレータ）"
+            ORC[orchestrator.py<br/>実行順序管理]
+            SCH[scheduler<br/>並列実行]
+            RTY[retry_manager<br/>リトライ制御]
+            ART[artifact_registry<br/>成果物管理]
+        end
+        
+        subgraph "全体性能差分分析エージェント"
+            PA1[summary_metrics.py<br/>指標計算]
+            PA2[diff_analyzer.py<br/>ベースライン比較]
+            PA3[visualizations.py<br/>図表生成]
+            PA4[exporter.py<br/>JSON/PNG出力]
+        end
+        
+        subgraph "個別データ分析エージェント"
+            IA1[期待値エージェント<br/>自然言語処理]
+            IA2[解析エージェント<br/>仮説生成・検証]
+            IA3[レポートエージェント<br/>HTML生成]
+        end
+        
+        subgraph "共通基盤"
+            DB[(DataWareHouse<br/>database.db)]
+            RAG[RAG<br/>FAISS+OpenAI]
+            AI[AI API<br/>OpenAI GPT]
+            VIS[可視化<br/>matplotlib+plotly]
+        end
+        
+        subgraph "出力層"
+            O1[最終レポート<br/>Notebook+HTML]
+            O2[図表<br/>charts/]
+            O3[データ<br/>JSON]
+            O4[ログ<br/>実行履歴]
+        end
+    end
+    
+    %% データフロー
+    I1 --> ORC
+    I2 --> RAG
+    I3 --> RAG
+    I4 --> IA1
+    
+    ORC --> PA1
+    ORC --> IA1
+    
+    PA1 --> PA2
+    PA2 --> PA3
+    PA3 --> PA4
+    
+    IA1 --> IA2
+    IA2 --> IA3
+    
+    %% 共通基盤への接続
+    PA1 -.-> DB
+    PA2 -.-> VIS
+    PA3 -.-> VIS
+    IA1 -.-> AI
+    IA2 -.-> RAG
+    IA2 -.-> AI
+    IA3 -.-> VIS
+    
+    %% 出力
+    PA4 --> O2
+    PA4 --> O3
+    IA3 --> O1
+    ORC --> O1
+    ORC --> O4
+    
+    %% スタイル
+    classDef inputClass fill:#e3f2fd
+    classDef orchestratorClass fill:#f3e5f5
+    classDef performanceClass fill:#e8f5e8
+    classDef instanceClass fill:#fff3e0
+    classDef commonClass fill:#fce4ec
+    classDef outputClass fill:#f1f8e9
+    
+    class I1,I2,I3,I4 inputClass
+    class ORC,SCH,RTY,ART orchestratorClass
+    class PA1,PA2,PA3,PA4 performanceClass
+    class IA1,IA2,IA3 instanceClass
+    class DB,RAG,AI,VIS commonClass
+    class O1,O2,O3,O4 outputClass
 ```
 
 ### データセット・出力の保管ポリシー
-- 本プロジェクトで扱うデータセットおよび各エンジンの出力は、`DataWareHouse/` 配下で一元管理します。
-- 想定ディレクトリ（例）:
-  - `DataWareHouse/01_mov_data/`（動画などの元データ。Git管理外/サンプルのみ）
-  - `DataWareHouse/02_core_lib_output/v{core_semver}/{video_ID}/`（コアライブラリの出力）
-  - `DataWareHouse/03_algorithm_output/v{algo_semver}/{core_lib_output_ID}/`（アルゴリズムの出力）
-- 評価・分析・可視化で生成される成果物（CSV/JSON/Notebook/HTML 等）も、原則 `DataWareHouse/` 配下に相対パスで保存します。
-- 保存先のベースパスは設定により切替可能としつつ、仕様上は `DataWareHouse/` を既定値とします。
+- 本プロジェクトで扱うデータセットおよび各エンジンの出力は、`database.db` を基準とした相対パスで一元管理します。
+- 評価・分析・可視化で生成される成果物（CSV/JSON/md/HTML 等）も、原則 `(database.dbの格納ディレクトリ)/05_analysis_output/` 配下に相対パスで保存します。
 
-## 📊 分析項目詳細
-
-### 時系列分析
-- フレーム単位での精度変動
-- 時間帯別の性能変化
-- 継続性の評価
-
-### エラー分析
-- 誤検知・未検知の詳細分析
-- エラーパターンの分類
-- エラー原因の特定
-
-### パフォーマンス分析
-- 処理速度の測定
-- メモリ使用量の監視
-- リソース効率の評価
-
-### ロバスト性分析
-- 異なる条件での動作安定性
-- ノイズ耐性の評価
-- 環境変化への適応性
 
 ## 🔄 処理フロー
 
 1. **評価結果データ読み込み**
-2. **基本統計量の算出**
-3. **全体性能の確認・差分分析（エージェント2）**
-4. **個別データの詳細分析（エージェント3）**
-5. **可視化データ・中間レポート生成**
-6. **改善提案の生成**
-7. **最終レポート統合出力（エージェント1）**
+2. **全体性能の確認・差分分析（エージェント2）**
+3. **個別データの詳細分析（エージェント3）**
+4. **全体性能中間レポート生成**
+5. **個別データ中間レポート生成**
+6. **最終レポートにまとめて統合出力**
 
 ```mermaid
 sequenceDiagram
-    participant C as 制御・最終レポート
-    participant P as 全体性能・差分
-    participant I as 個別データ分析
-
-    C->>P: 評価結果を入力し集計・差分比較
-    P-->>C: 集計JSON/図表
-    C->>I: 個別課題データの分析要求（並列処理可）
-    I-->>C: 各個票の分析結果（根因仮説/可視化/HTMLセクション）
-    C->>C: 統合サマリ作成・優先度付け
-    C-->>C: Notebook/HTML 最終レポート生成
+    participant User as ユーザー
+    participant ORC as オーケストレータ
+    participant PA as 全体性能分析
+    participant IA as 個別データ分析
+    participant DB as DataWareHouse
+    participant AI as AI API
+    participant VIS as 可視化エンジン
+    
+    Note over User, VIS: 1. 初期化・設定読み込み
+    User->>ORC: 分析実行要求
+    ORC->>ORC: 設定読み込み（並列度、しきい値）
+    ORC->>DB: 評価結果データ取得
+    
+    Note over User, VIS: 2. 全体性能差分分析（エージェント2）
+    ORC->>PA: 全体分析開始
+    PA->>DB: 評価データ・ベースライン取得
+    PA->>PA: 指標計算・差分算出
+    PA->>VIS: 図表生成（時系列、混同行列、ROC）
+    PA->>ORC: 集計結果・図表・差分レポート
+    
+    Note over User, VIS: 3. 個別データ分析（エージェント3）並列実行
+    ORC->>IA: 個別分析タスク配布（並列）
+    
+    loop 各データに対して並列実行
+        IA->>AI: 期待値解釈（自然言語→構造化）
+        IA->>DB: 個別データ取得
+        IA->>AI: 仮説生成（RAG活用）
+        IA->>AI: 動的解析実行
+        
+        alt 仮説検証成功
+            IA->>VIS: 個別図表生成
+            IA->>IA: 個別レポート作成
+        else 仮説検証失敗
+            IA->>AI: 仮説再生成（最大3回）
+            IA->>AI: 再解析実行
+        end
+        
+        IA->>ORC: 個別分析結果
+    end
+    
+    Note over User, VIS: 4. 統合・最終レポート生成
+    ORC->>ORC: 結果統合・優先度付け
+    ORC->>VIS: 最終レポート生成（Notebook+HTML）
+    ORC->>DB: 分析結果保存
+    ORC->>User: 最終レポート配信
+    
+    Note over User, VIS: 5. エラーハンドリング・リトライ
+    alt 処理失敗時
+        ORC->>ORC: リトライ管理（指数バックオフ）
+        ORC->>User: エラー通知・部分結果提供
+    end
 ```
 
 ---
 
 ## 3. 個別データの分析エージェント（詳細仕様）
 
-本章の詳細仕様はボリュームが大きいため、専用ドキュメントに分離しました。Notebook出力を基本としつつ、HTMLレポート生成にも対応します。
+本章の詳細仕様はボリュームが大きいため、専用ドキュメントに分離。
 
-- 参照: `projects/詳細設計資料/AI分析エンジン/個別データ分析エージェント仕様.md`
+ - 参照: `projects/詳細設計資料/AI分析エンジン/個別データ分析エージェント仕様.md`
  - 参照: `projects/詳細設計資料/AI分析エンジン/制御・最終レポートエージェント仕様.md`
  - 参照: `projects/詳細設計資料/AI分析エンジン/全体性能差分分析エージェント仕様.md`
 
 ### 3.1 目的と特徴
 - 自然言語の期待値・仕様書・ソースコードを参照し、個票データの異常箇所を特定
 - 仮説→検証→ループバックの自律サイクルで原因特定を支援（最大試行回数を設定）
-- 解析は Pandas AI を用いた動的コード生成で実施し、根拠を出力
+- 解析は AI を用いた動的コード生成で実施し、根拠を出力
 
 ### 3.2 入力
-- データ: CSV または DB（例: `frame`, `value`, `category` など）
+- データ: アルゴリズムの出力結果が記載された時系列のCSV （例: `frame`, `predict_result` など）
+- データ: アルゴリズムの入力データが記載された時系列のCSV （例: `frame`, `input_data` など）
 - 仕様書: Markdown（アルゴリズム仕様）
 - ソースコード: Python 等（必要に応じて AST 解析）
-- 期待値: 自然言語（テンプレート＋LLM で構造化 JSON に変換）
+- 期待値: 自然言語（テンプレート＋LLM で構造化 JSON に変換）（未実装）
 
 ### 3.3 出力
-- 個別レポート（HTML セクション or Notebook セル）
+- 個別レポート（解析データ１つにつき１つのマークダウンファイル）
   - 異常箇所（場所・検出値・期待値・差分）
   - 仮説（例: 条件分岐ミス、パラメータ不整合、データ不備）
-  - 可視化（Plotly 対応のグラフ/表）
-  - 初心者向けサマリ（自然言語）
+  - 可視化（jpgによる図をマークダウンにリンク）
 
 ### 3.4 処理の流れ
 ```mermaid
-graph TD
-    A[期待値テキスト] -->|構造化| B[期待値パーサ]
-    A2[仕様書/コード] -->|RAG参照| C[RAGヘルパ]
-    D[CSV/DB] --> E[動的解析Pandas AI]
-    B --> E
-    C --> E
-    E --> F{検証}
-    F -->|OK| G[個別レポート生成]
-    F -->|NG| B
+flowchart TD
+    Start([個別データ分析開始]) --> A1[期待値エージェント]
+    
+    subgraph "期待値エージェント"
+        A1 --> A2{自然言語期待値}
+        A2 -->|定型句| A3[テンプレート解析]
+        A2 -->|非定型| A4[LLM解析]
+        A3 --> A5[構造化JSON生成]
+        A4 --> A5
+    end
+    
+    A5 --> B1[解析エージェント]
+    
+    subgraph "解析エージェント（仮説・検証ループ）"
+        B1 --> B2[1. 結果確認]
+        B2 --> B3[仕様書・コード参照<br/>RAG検索]
+        B3 --> B4[2. データ収集]
+        B4 --> B5[入力データ特定・抽出<br/>時系列可視化]
+        B5 --> B6[3. 仮説検討]
+        B6 --> B7[input-output整合確認]
+        B7 --> B8[4. 仮説検証]
+        B8 --> B9[境界条件・欠損処理<br/>座標変換解析]
+        B9 --> B10{仮説検証}
+        
+        B10 -->|成功| B11[5. 課題出力]
+        B10 -->|失敗| B12{試行回数<br/>< 3回?}
+        B12 -->|Yes| B6
+        B12 -->|No| B13[最終仮説採用]
+        B13 --> B11
+    end
+    
+    B11 --> C1[レポートエージェント]
+    
+    subgraph "レポートエージェント"
+        C1 --> C2[異常箇所特定]
+        C2 --> C3[可視化図表生成<br/>Plotly/matplotlib]
+        C3 --> C4[個別レポートMD生成]
+        C4 --> C5[仮説・根拠記載]
+    end
+    
+    C5 --> End([個別分析完了])
+    
+    %% スタイル
+    classDef agentClass fill:#e3f2fd,stroke:#1976d2
+    classDef processClass fill:#e8f5e8,stroke:#388e3c
+    classDef decisionClass fill:#fff3e0,stroke:#f57c00
+    classDef outputClass fill:#f1f8e9,stroke:#689f38
+    
+    class A1,B1,C1 agentClass
+    class A3,A4,A5,B2,B3,B4,B5,B6,B7,B8,B9,B11,B13,C2,C3,C4,C5 processClass
+    class A2,B10,B12 decisionClass
+    class Start,End outputClass
 ```
-
-### 3.5 主要コンポーネント
-- 期待値パーサ: 正規表現テンプレート＋LLM フォールバックで JSON 構造化
-- RAG ヘルパ: 仕様書・コードを FAISS 等で検索し、根拠文脈を抽出
-- 動的解析: Pandas AI で適切な列/指標/範囲を選択しコード生成・実行
-- 検証/ループバック: 検証失敗時は最大 N 回まで仮説再生成
-- レポート生成: Plotly 図/表とともに HTML セクションを生成（Notebookへ埋込可）
-
-### 3.6 入出力例（抜粋）
-- 課題（期待値）: 入力「フレーム x~y は項目 z が w であるべき」
-- エージェントの動作:
-  1. 結果の確認: 仕様書・ソースコードから入力内容が本当に正しいかを状況確認（項目 z の定義、期待値 w の意味/単位、前処理の有無などを確認）
-  2. 仮説検討のためのデータ収集: 仕様書・ソースコードからアルゴリズムの入力としているデータを特定し、アクセスして課題シーンの入力値を抽出。フレーム数が多い場合は z の時系列プロットや z と出力の対応関係などの図表を生成して確認
-  3. 仮説の検討: 課題シーンにおいて input に対する output の状態を照合し、仕様通りであれば 4. で input の詳細解析を実施。仕様外の動作をしている場合は 4. で仕様・ソースコードを詳細分析
-  4. 仮説が正しいかを検証: 3. で確認した状態に応じて詳細解析（仕様書には具体例を数件明記。例: 閾値の境界条件、NaN/欠損時処理、座標系変換の取り扱いなど）
-  5. 出力: 仮説が正しい場合は課題として出力。仮説が間違っている場合は 2. に戻り再検討（最大試行回数まで）
-
-- 出力（レポートセクション例）:
-  - 異常: フレーム x~y, 項目 z, 実測値の範囲/代表値, 期待 w, 差分または逸脱率
-  - 仮説: 前処理順序の問題、閾値設定ミス、データ供給遅延/同期ずれ、境界条件の実装抜け 等
-  - 図: z の時系列プロット、出力との相関図、該当区間のハイライト（Plotly）
-
-### 3.7 設定
-- 最大ループ回数、LLM モデル、RAG トップK、Pandas AI 実行タイムアウト、出力形式（Notebook/HTML）等
 
 ---
 
@@ -231,80 +305,70 @@ graph TD
 
 ### レポートファイル構成
 ```
-reports/
-├── analysis_report_YYYYMMDD_HHMMSS.ipynb
-├── charts/
-│   ├── time_series.png
-│   ├── confusion_matrix.png
-│   ├── roc_curve.png
-│   └── error_heatmap.png
+[analysis_ID]_[date]/
+├── analysis_report_YYYYMMDD_HHMMSS.md
+├── data1_[data_ID].md
+├── data2_[data_ID].md
+├── ...
+├── images/
+│   ├── time_series.jpg
+│   ├── confusion_matrix.jpg
+│   ├── roc_curve.jpg
+│   └── error_heatmap.jpg
 └── data/
     ├── analysis_summary.json
     └── improvement_suggestions.json
 ```
 
-### サンプルコード例
-```python
-# 分析エンジンの実行例
-from ai_analysis_engine import AIAnalysisEngine
 
-# エンジンの初期化
-engine = AIAnalysisEngine(
-    model_name="gpt-4",
-    evaluation_data_path="evaluation_results.csv",
-    output_dir="analysis_reports"
-)
-
-# 分析実行
-report = engine.analyze(
-    algorithm_name="eye_detection_v1",
-    evaluation_metrics=["accuracy", "speed", "robustness"],
-    comparison_baseline="eye_detection_v0"
-)
-
-# レポート生成
-report.generate_summary()
-report.generate_detailed_analysis()
-report.generate_improvement_suggestions()
-```
-
-### 出力サンプル
+### サマリレポート出力サンプル
 ```markdown
 # 分析サマリー
 
 ## 実行概要
 - **分析日時**: 2025-07-25 14:30:00
-- **対象アルゴリズム**: eye_detection_v1
+- **対象アルゴリズム**: eye_detection
+- **アルゴリズムバージョン**: v1.0
 - **評価回数**: 20回（4人×5回）
-- **比較対象**: eye_detection_v0
+- **比較対象**: v0.9
 
 ## 主要結果
-- **精度**: 85.2% (前回比 +5.3%)
-- **処理速度**: 平均 120ms (前回比 -15ms)
-- **検出率**: 92.1% (前回比 +3.2%)
+- **正解率**: 85.2% (前回比 +5.3%))
+- **過検知数**: xx回/h (前回比 -0.2回/h)
 
-## 改善提案
-1. **パフォーマンス最適化**: 処理速度をさらに20%向上可能
-2. **エラーハンドリング強化**: エッジケースの対応改善
-3. **メモリ使用量削減**: 現在の80%まで削減可能
+## 主要課題
+| 課題 | 原因 | 詳細 |
+|------|------|------|
+| 過検知数が多い | 閾値設定が不適切 | 眼の閉じ具合の判定閾値が低すぎるため、軽微な瞬きも居眠りとして検出 |
+| 検出遅延が発生 | フレーム処理の遅延 | 連続フレーム解析時のバッファリング処理が重く、リアルタイム性が低下 |
+| 精度のばらつき | 環境光の影響 | 明暗差が大きい環境下で瞳孔検出精度が不安定 |
+
+
+## 個別データ分析結果
+(各個別データ分析結果のマークダウンファイルへのリンクを記載)
+
+
 ```
 
 ## 🔧 設定項目
 
 ### AI分析パラメータ
 - 分析深度レベル（Basic/Standard/Detailed）
-- 改善提案の数（デフォルト：10件）
 - 可視化の詳細度
 - レポートの出力形式
 
 ### カスタマイズ項目
 - 分析項目の追加・削除
 - 可視化チャートのカスタマイズ
-- 改善提案の優先度計算方法
 - レポートテンプレートの変更
+
+
 
 ## 📝 更新履歴
 
 - **2025-07-25**: 初版作成（v1.0）
 - **2025-08-08**: 3エージェント構成を定義し、個別データ分析エージェントの詳細仕様を統合（v1.1）
 - **2025-08-17**: 3.6 入出力例を「フレーム x~y は項目 z が w であるべき」に基づく現実的ワークフローへ更新（v1.2）
+- **2025-08-29**: システム構成図・処理フロー図を追加、改善提案を実装重視に整理して資料をv1.3に完成（v1.3）
+ 
+ 
